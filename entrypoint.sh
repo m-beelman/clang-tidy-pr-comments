@@ -8,7 +8,15 @@ if [ $pull_request_id == "null" ]; then
   exit 0
 fi
 
+repository_name=$(basename $GITHUB_REPOSITORY)
+recreated_runner_dir="/__w/$repository_name"
+mkdir -p $recreated_runner_dir
+recreated_repo_dir="$recreated_runner_dir/$repository_name"
+
+ln -s $(pwd) $recreated_repo_dir
+
+cd $recreated_repo_dir
 eval python3 /action/run_action.py \
   --clang-tidy-fixes $INPUT_CLANG_TIDY_FIXES \
   --pull-request-id $pull_request_id \
-  --repository-root $PWD
+  --repository-root $recreated_repo_dir
